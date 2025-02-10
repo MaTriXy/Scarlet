@@ -5,7 +5,7 @@
 package com.tinder.scarlet.lifecycle.android
 
 import android.app.Application
-import android.arch.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleOwner
 import com.tinder.scarlet.Lifecycle
 import com.tinder.scarlet.lifecycle.LifecycleRegistry
 
@@ -30,5 +30,15 @@ object AndroidLifecycle {
         throttleTimeoutMillis: Long = ACTIVITY_THROTTLE_TIMEOUT_MILLIS
     ): Lifecycle =
         LifecycleOwnerResumedLifecycle(lifecycleOwner, LifecycleRegistry(throttleTimeoutMillis))
+            .combineWith(ConnectivityOnLifecycle(application))
+
+    @JvmStatic
+    @JvmOverloads
+    fun ofServiceStarted(
+        application: Application,
+        lifecycleOwner: LifecycleOwner,
+        throttleTimeoutMillis: Long = ACTIVITY_THROTTLE_TIMEOUT_MILLIS
+    ): Lifecycle =
+        ServiceStartedLifecycle(lifecycleOwner, LifecycleRegistry(throttleTimeoutMillis))
             .combineWith(ConnectivityOnLifecycle(application))
 }

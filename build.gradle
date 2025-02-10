@@ -1,39 +1,55 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext.kotlin_version = '1.5.30'
     ext.dokka_version = '0.9.16'
     repositories {
+        mavenCentral()
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
+        classpath 'com.android.tools.build:gradle:7.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.4"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:${dokka_version}"
-        classpath 'org.kordamp.gradle:stats-gradle-plugin:0.2.2'
     }
 }
 
 plugins {
-    id 'org.jlleitschuh.gradle.ktlint' version '4.1.0'
+    id 'org.jlleitschuh.gradle.ktlint' version '10.0.0'
 }
 
 ktlint {
-    version = '0.24.0'
+    version = '0.40.0'
 }
 
-subprojects {
-    apply plugin: 'org.kordamp.gradle.stats'
-    apply plugin: "com.jfrog.artifactory"
-    // group = 'com.tinder.scarlet' TODO use Bintray
-    group = 'com.github.tinder'
+allprojects {
+    group = GROUP
+    version = VERSION_NAME
 
     repositories {
+        mavenCentral()
         google()
         jcenter()
+    }
+}
+
+subprojects { project ->
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+    tasks.withType(JavaCompile).configureEach {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    plugins.withType(com.android.build.gradle.BasePlugin).configureEach { plugin ->
+        plugin.extension.compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
     }
 }
 

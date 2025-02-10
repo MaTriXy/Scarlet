@@ -3,19 +3,26 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/android:api-27-alpha
+      - image: circleci/android:api-30
     environment:
         TERM: dumb
-        GRADLE_OPTS: '-Dorg.gradle.jvmargs="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap" -Dorg.gradle.parallel=false -Dorg.gradle.daemon=true'
+        JAVA_TOOL_OPTIONS: "-Xmx1g"
+        GRADLE_OPTS: '-Dorg.gradle.parallel=false -Dorg.gradle.daemon=false'
         CIRCLE_TEST_REPORTS: test-reports
-    resource_class: xlarge
-    parallelism: 4
     steps:
       - checkout
       - run:
           name: Disable PreDexing
           command:  echo "disablePreDex" >> gradle.properties
       - run: if [ -e ./gradlew ]; then ./gradlew dependencies;else gradle dependencies;fi
+      - run: mkdir -p test-reports/junit/
       - run: ./gradlew test
-      - run: mkdir -p $CIRCLE_TEST_REPORTS/junit/
-      - run: find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+      - run:
+          name: gather_test_results
+          command: find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} test-reports/junit/ \;
+          when: always
+      - store_test_results:
+          path: test-reports
+      - run:
+          name: Deploy Snapshot
+          command: ./publish.sh

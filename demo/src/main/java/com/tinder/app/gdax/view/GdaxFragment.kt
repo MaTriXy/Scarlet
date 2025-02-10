@@ -6,13 +6,13 @@ package com.tinder.app.gdax.view
 
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -42,7 +42,7 @@ class GdaxFragment : Fragment(), GdaxTarget {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         (context!!.applicationContext as GdaxComponent.ComponentProvider).gdaxComponent
             .inject(this)
 
@@ -101,7 +101,7 @@ class GdaxFragment : Fragment(), GdaxTarget {
                 setDrawValues(false)
             }
 
-        val minPrice = priceEntries.minBy { it.y }?.y ?: 0F
+        val minPrice = priceEntries.minByOrNull { it.y }?.y ?: 0F
         val minPriceEntries = listOf(
             Entry(minutesAgo.millisOfDay.toFloat(), minPrice),
             Entry(now.millisOfDay.toFloat(), minPrice)

@@ -1,9 +1,13 @@
 Scarlet
 ===
 [![CircleCI](https://circleci.com/gh/Tinder/Scarlet.svg?style=svg)](https://circleci.com/gh/Tinder/Scarlet)
-[![Release](https://jitpack.io/v/tinder/scarlet.svg)](https://jitpack.io/#tinder/scarlet)
 
 A Retrofit inspired WebSocket client for Kotlin, Java, and Android.
+
+Update
+---
+We are working on a new version of Scarlet that supports other persistent connection protocols: ServerSentEvent, Socket IO, STOMP, and MQTT. It can be found on the [`0.2.x`](https://github.com/Tinder/Scarlet/tree/0.2.x) branch.
+
 
 Tutorial
 ---
@@ -20,7 +24,7 @@ Declare a WebSocket client using an interface:
 ~~~ kotlin
 interface GdaxService {
 	@Receive
-	fun observeOnConnectionOpenedEvent(): Flowable<WebSocket.Event.OnConnectionOpen<*>>
+	fun observeWebSocketEvent(): Flowable<WebSocket.Event>
 	@Send
 	fun sendSubscribe(subscribe: Subscribe)
 	@Receive
@@ -34,7 +38,7 @@ Use Scarlet to create an implementation:
 val scarletInstance = Scarlet.Builder()
     .webSocketFactory(okHttpClient.newWebSocketFactory("wss://ws-feed.gdax.com"))
     .addMessageAdapterFactory(MoshiMessageAdapter.Factory())
-    .addStreamAdapterFactory(RxJava2StreamAdapter.Factory())
+    .addStreamAdapterFactory(RxJava2StreamAdapterFactory())
     .build()
 
 val gdaxService = scarletInstance.create<GdaxService>()
@@ -49,7 +53,8 @@ val BITCOIN_TICKER_SUBSCRIBE_MESSAGE = Subscribe(
     channels = listOf("ticker")
 )
 
-gdaxService.observeOnConnectionOpenedEvent()
+gdaxService.observeWebSocketEvent()
+    .filter { it is WebSocket.Event.OnConnectionOpened<*> }
     .subscribe({
         gdaxService.sendSubscribe(BITCOIN_TICKER_SUBSCRIBE_MESSAGE)
     })
@@ -67,31 +72,25 @@ Scarlet is driven by a [StateMachine][state-machine].
 
 TODO
 
+
 Download
 --------
-While we are working on Bintray support, Scarlet is available via [JitPack][jitpack].
+Scarlet is available via Maven Central.
+
+Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
 ##### Maven:
 ```xml
-<repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-</repository>
 <dependency>
-    <groupId>com.github.tinder.scarlet</groupId>
+    <groupId>com.tinder.scarlet</groupId>
     <artifactId>scarlet</artifactId>
-    <version>latestVersion</version>
+    <version>0.1.12</version>
 </dependency>
 ```
 
 ##### Gradle:
 ```groovy
-repositories {
-    // ...
-    maven { url "https://jitpack.io" }
-}
-
-implementation 'com.github.tinder.scarlet:scarlet:$latestVersion'
+implementation 'com.tinder.scarlet:scarlet:0.1.12'
 ```
 
 ### Plug-in Roadmap
@@ -103,7 +102,7 @@ implementation 'com.github.tinder.scarlet:scarlet:$latestVersion'
 - [x] `moshi`
 - [x] `gson`
 - [x] `protobuf`
-- [ ] `jackson`
+- [x] `jackson`
 - [ ] `simple-xml`
 
 `StreamAdapter.Factory`
@@ -149,10 +148,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ~~~
 
  [gdax-websocket-feed]: https://docs.gdax.com/#websocket-feed
- [latest-jar]: https://tinder.jfrog.io/tinder/webapp/#/artifacts/browse/tree/General/libs-release-local/com/tinder/scarlet/scarlet
  [demo-app]: /demo/src/main/java/com/tinder/app
- [tutorial]: https://tech.gotinder.com/taming-websocket-with-scarlet/
+ [tutorial]: https://medium.com/tinder-engineering/taming-websocket-with-scarlet-f01125427677
  [slides]: https://speakerdeck.com/zhxnlai/taming-websocket-with-scarlet
  [kotliners]: https://www.conferenceforkotliners.com/
  [state-machine]: https://github.com/Tinder/StateMachine
- [jitpack]: https://jitpack.io/#tinder/scarlet
+ [snap]: https://oss.sonatype.org/content/repositories/snapshots/com/tinder/scarlet/

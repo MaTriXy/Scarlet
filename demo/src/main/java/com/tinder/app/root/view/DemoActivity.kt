@@ -5,13 +5,13 @@
 package com.tinder.app.root.view
 
 import android.os.Bundle
-import android.support.design.widget.TabLayout
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v4.view.ViewPager
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.tinder.R
 import com.tinder.app.echo.view.EchoBotFragment
 import com.tinder.app.gdax.view.GdaxFragment
@@ -39,8 +39,8 @@ class DemoActivity : AppCompatActivity() {
     }
 
     private class ViewPagerAdapter constructor(fm: FragmentManager, private val pageCount: Int) :
-        FragmentStatePagerAdapter(fm) {
-        override fun getItem(position: Int): Fragment? {
+        FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        override fun getItem(position: Int): Fragment {
             val (_, createFragment) = TAB_ITEMS[position]
             return createFragment()
         }

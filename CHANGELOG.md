@@ -1,0 +1,49 @@
+Change Log
+==========
+
+## Version 0.1.12
+_2021-04-05_
+
+* Various build tools and dependencies upgrade
+    * Gradle 6.8.3
+    * Kotlin 1.4.31
+    * Protobuf 3.15.6
+    * OkHttp 4.9.1
+* Support JDK 11
+
+## Version 0.1.11
+_2020-11-02_
+
+* Fix: Remove premature determination of `Lifecycle.State.Started` when `ApplicationResumedLifecycle` is used.
+* New: Add `ServiceStartedLifecycle` to support `Service`.
+
+## Version 0.1.10
+_2020-01-17_
+
+* Update protobuf-Java to 3.11.0.
+* Fix: do not use the registry as param if it is null.
+* Remove un-used kotlin-reflect artifact.
+
+## Version 0.1.9
+
+_2019-07-15_
+
+**This release upgrades the project's JVM target to 1.8.** If you are building Android libraries or apps, adding this to your `build.gradle` to have [Java 8 language support](https://developer.android.com/studio/write/java8-support).
+
+```Gradle
+android {
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+```
+
+* Fix: Target Java 8 bytecode.
+* Fix: Use [StateMachine](https://github.com/Tinder/StateMachine) artifact from Maven Central. 
+
+## Version 0.1.8
+
+_2019-06-20_
+
+* Released Scarlet in Maven Central. `groupId` is now `com.tinder`. See all artifacts [here](https://search.maven.org/search?q=g:com.tinder.scarlet). 

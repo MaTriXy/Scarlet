@@ -14,9 +14,12 @@ import com.tinder.scarlet.Scarlet
 import com.tinder.scarlet.lifecycle.android.AndroidLifecycle
 import com.tinder.scarlet.streamadapter.rxjava2.RxJava2StreamAdapterFactory
 import com.tinder.scarlet.websocket.okhttp.newWebSocketFactory
+import com.tinder.streamadapter.coroutines.CoroutinesStreamAdapterFactory
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -55,12 +58,19 @@ interface EchoBotComponent {
         @EchoBotScope
         fun provideEchoService(client: OkHttpClient, lifecycle: Lifecycle): EchoService {
             val scarlet = Scarlet.Builder()
-                .webSocketFactory(client.newWebSocketFactory("ws://demos.kaazing.com/echo"))
+                .webSocketFactory(client.newWebSocketFactory("wss://demos.kaazing.com/echo"))
                 .lifecycle(lifecycle)
                 .addMessageAdapterFactory(BitmapMessageAdapter.Factory())
                 .addStreamAdapterFactory(RxJava2StreamAdapterFactory())
+                .addStreamAdapterFactory(CoroutinesStreamAdapterFactory())
                 .build()
             return scarlet.create()
+        }
+
+        @Provides
+        @EchoBotScope
+        fun provideCoroutineScopeToRunIn(): CoroutineScope {
+            return CoroutineScope(SupervisorJob())
         }
     }
 
